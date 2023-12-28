@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,22 +8,31 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.util.List;
-import java.util.Set;
 
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
 
     private final UserService userService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService, ModelMapper modelMapper) {
         this.userService = userService;
+        this.modelMapper = modelMapper;
+    }
+
+    @GetMapping("/users")
+    public ModelAndView getPage(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("users.html");
+        return modelAndView;
     }
 
     @GetMapping()
