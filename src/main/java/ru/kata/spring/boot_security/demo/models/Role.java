@@ -1,13 +1,16 @@
 package ru.kata.spring.boot_security.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.springframework.security.core.GrantedAuthority;
 
+
 import javax.persistence.*;
-import java.util.Collections;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@roleId")
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +51,8 @@ public class Role implements GrantedAuthority {
     }
 
     public String getName() {
+        System.out.println(this.id);
+        System.out.println(this.name);
 
         return name.split("_")[1];
     }
@@ -72,12 +77,6 @@ public class Role implements GrantedAuthority {
     public String toString() {
         return name.split("_")[1];
     }
-    public Set<Role> getSingleton(){
-        return Collections.singleton(new Role(name));
-    }
 
-    public Set<Role> getSingleTon() {
-        return Collections.singleton(new Role(name));
-    }
 
 }

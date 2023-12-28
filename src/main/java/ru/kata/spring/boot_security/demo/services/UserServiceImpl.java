@@ -1,8 +1,6 @@
 package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,30 +8,30 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
-import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService, UserDetailsService{
 
     private final UserRepository userRepository;
 
     private final RoleRepository roleRepository;
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(BCryptPasswordEncoder bCryptPasswordEncoder, UserRepository userRepository, RoleRepository roleRepository) {
+
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-
     }
 
     @Transactional(readOnly = true)
@@ -57,15 +55,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public void update(User user) {
         String pass = user.getPassword();
-        if (pass.isEmpty()) {
+        if (pass.isEmpty()){
             user.setPassword(userRepository.findById(user.getId()).get().getPassword());
-        } else {
+        }
+        else{
             user.setPassword(bCryptPasswordEncoder.encode(pass));
         }
         userRepository.save(user);
     }
 
-    @Transactional
+    @Transactional()
     @Override
     public void delete(long id) {
         userRepository.deleteById(id);
@@ -76,13 +75,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<User> getListOfUsers() {
         return userRepository.findAll();
     }
+    @Transactional(readOnly = true)
+    @Override
+    public Role getRoleById(Long id) {
+        return roleRepository.getReferenceById(id);
+    }
 
     @Transactional
     @Override
     public void save(Role role) {
         if (roleRepository.findByName(role.getName()).isEmpty()) {
             roleRepository.save(role);
-        } else {
+        } else{
             role = roleRepository.findByName(role.getName()).get();
         }
     }
@@ -105,11 +109,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return roleRepository.findAll();
     }
 
-    @Transactional(readOnly = true, noRollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Transactional(propagation= Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByEmail(username);
-        for (Role role : user.get().getRoles()) {
+        for (Role role: user.get().getRoles()){
             System.out.println(role.getName());
         }
         if (user.isEmpty()) {
@@ -117,4 +121,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         return user.get();
     }
+
 }

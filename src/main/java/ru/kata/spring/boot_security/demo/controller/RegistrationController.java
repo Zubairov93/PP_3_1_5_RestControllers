@@ -1,7 +1,7 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +13,7 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 
 import javax.validation.Valid;
 
+@Controller
 public class RegistrationController {
     private final UserService userService;
 
@@ -34,22 +35,16 @@ public class RegistrationController {
 
     @PostMapping("/registration")
     public String addUser(@ModelAttribute("userForm") @Valid User userForm, BindingResult bindingResult, Model model) {
-        System.out.println("1");
+
         if (bindingResult.hasErrors()) {
             return "registration";
         }
-        System.out.println("1");
-        if (userForm.getPassword().equals(userForm.getConfirm())) {
-            model.addAttribute("passwordError", "Пароли не совпадают");
-            return "registration";
-        }
-        System.out.println("12");
+
         if (!userService.save(userForm)) {
-            System.out.println("2");
             model.addAttribute("usernameError", "Пользователь с таким именем уже существует");
             return "registration";
         }
-        System.out.println("13");
+
         return "redirect/login";
     }
 

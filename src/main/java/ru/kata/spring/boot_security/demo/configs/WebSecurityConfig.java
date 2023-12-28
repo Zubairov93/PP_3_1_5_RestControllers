@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.configs;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +29,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/", "/index", "/roles/**").permitAll()
                 .antMatchers("/registration").not().fullyAuthenticated()
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/user").hasAnyRole("ADMIN","USER")
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user").hasAnyRole("ADMIN","USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().successHandler(successUserHandler)
@@ -42,6 +43,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public static BCryptPasswordEncoder bcryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public static ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
     @Autowired
