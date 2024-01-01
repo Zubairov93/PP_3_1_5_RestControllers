@@ -1,6 +1,6 @@
 "use strict";
 console.log(1 + 1);
-const url = 'http://localhost:8080/admin';
+const url = 'http://localhost:8080';
 const postList = document.querySelector("tbody");
 const collapse = document.querySelector(".collapse");
 const creatUser = document.querySelector("#creater")

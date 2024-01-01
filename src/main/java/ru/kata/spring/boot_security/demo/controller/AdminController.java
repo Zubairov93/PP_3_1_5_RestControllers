@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.controller;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +14,7 @@ import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,37 +38,33 @@ public class AdminController {
     }
 
     @GetMapping()
-    public Map<String, Object> printAllUsers() {
-        Map<String, Object> resMap = new HashMap<>();
+    public Pair<Pair<UserDTO, User>, Pair<List<UserDTO>, List<Role>>> printAllUsers() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDTO admin = convertToDTO((User) authentication.getPrincipal());
-        System.out.println(admin.getEmail());
-        System.out.println("111");
         List<Role> roles = userService.getAllRoles();
-        List<UserDTO> users = userService.getListOfUsers().stream().
-                map(this::convertToDTO).collect(Collectors.toList());
+        for (Role r : roles) {
+            System.out.println(r.getAuthority());
+        }
+        List<UserDTO> users = userService.getListOfUsers().stream()
+                .map(this::convertToDTO).collect(Collectors.toList());
 
         User user = new User();
-        resMap.put("admin", admin);
-        resMap.put("users", user);
-        resMap.put("roles", roles);
-
-        return resMap;
+        return Pair.of(Pair.of(admin, user), Pair.of(users, roles));
     }
 
     @PostMapping()
-    public Map<String, Object>  creat(@RequestBody User userDTO) {
+    public Pair<Pair<UserDTO, User>, Pair<List<UserDTO>, List<Role>>> creat(@RequestBody User userDTO) {
         userService.save(userDTO);
         return printAllUsers();
     }
 
     @PatchMapping("/{id}")
-    public Map<String, Object> update(@RequestBody User user) {
+    public Pair<Pair<UserDTO, User>, Pair<List<UserDTO>, List<Role>>> update(@RequestBody User user) {
         userService.update(user);
         return printAllUsers();
     }
     @DeleteMapping("/{id}")
-    public Map<String, Object> delete(@PathVariable("id") long id){
+    public Pair<Pair<UserDTO, User>, Pair<List<UserDTO>, List<Role>>> delete(@PathVariable("id") long id){
         userService.delete(id);
         return printAllUsers();
     }

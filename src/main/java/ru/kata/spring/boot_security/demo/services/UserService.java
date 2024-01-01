@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface UserService {
 
+    void initUser ();
+
     User getUser(long id);
 
     boolean save(User user);

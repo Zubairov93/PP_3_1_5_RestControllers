@@ -13,9 +13,7 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService{
@@ -43,7 +41,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     @Transactional
     @Override
     public boolean save(User user) {
-        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
+        if (!userRepository.findByEmail(user.getUsername()).isEmpty()) {
             return false;
         }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -121,5 +119,29 @@ public class UserServiceImpl implements UserService, UserDetailsService{
         }
         return user.get();
     }
+    @Transactional
+    public void initUser() {
+
+        Role adminRole = new Role("ROLE_ADMIN");
+        Role userRole = new Role("ROLE_USER");
+        save(adminRole);
+        save(userRole);
+
+        // Создайте пользователя с ролями
+        User user = new User();
+        user.setUsername("Admin");
+        user.setPassword(bCryptPasswordEncoder.encode("6"));
+        user.setRoles(Set.of(adminRole));
+        User user1 = new User();
+        user1.setUsername("User");
+        user1.setPassword(bCryptPasswordEncoder.encode("5"));
+        user1.setRoles(Set.of(userRole));
+        Set<Role> roles = new HashSet<>();
+        roles.add(adminRole);
+        roles.add(userRole);
+        user.setRoles(roles);
+        userRepository.save(user);
+    }
+
 
 }

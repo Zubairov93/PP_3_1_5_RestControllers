@@ -10,6 +10,7 @@ import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.Optional;
 
+
 public class Details implements UserDetailsService {
     private UserRepository userRepository;
 
