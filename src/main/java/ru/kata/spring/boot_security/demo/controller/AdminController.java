@@ -33,7 +33,7 @@ public class AdminController {
     @GetMapping("/users")
     public ModelAndView getPage(){
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("users.html");
+        modelAndView.setViewName("users");
         return modelAndView;
     }
 

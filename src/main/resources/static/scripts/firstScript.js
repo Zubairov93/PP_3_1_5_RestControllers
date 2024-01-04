@@ -5,6 +5,8 @@ let response = await fetch(url);
 
 if(response.ok) {
     let json = await response.json()
+
+    console.log('Data'+ json.data())
 } else {
     alert("Ошибка HTTP: " + response.status);
 }

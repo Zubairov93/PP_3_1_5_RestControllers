@@ -1,12 +1,11 @@
 package ru.kata.spring.boot_security.demo.dto;
 
-import javax.validation.constraints.Size;
 import java.util.Set;
 
 public class UserDTO {
 
     private Long id;
-    @Size(min = 4, message = "Не меньше 4 знаков")
+
     private String email;
 
     private String password;
