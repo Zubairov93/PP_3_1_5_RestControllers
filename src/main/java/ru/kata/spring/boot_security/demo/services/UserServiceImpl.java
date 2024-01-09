@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     @Transactional
     @Override
     public boolean save(User user) {
-        if (!userRepository.findByEmail(user.getUsername()).isEmpty()) {
+        if (!userRepository.findByUsername(user.getUsername()).isEmpty()) {
             return false;
         }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 
     @Override
     public boolean contains(String username) {
-        return !userRepository.findByEmail(username).isEmpty();
+        return !userRepository.findByUsername(username).isEmpty();
     }
 
     @Override
@@ -110,14 +110,14 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     @Transactional(propagation= Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByEmail(username);
-        for (Role role: user.get().getRoles()){
-            System.out.println(role.getName());
-        }
-        if (user.isEmpty()) {
-            throw new UsernameNotFoundException(username);
-        }
-        return user.get();
+            Optional<User> user = userRepository.findByUsername(username);
+            for (Role role: user.get().getRoles()){
+                System.out.println(role.getName());
+            }
+            if (user.isEmpty()) {
+                throw new UsernameNotFoundException(username);
+            }
+            return user.get();
     }
     @Transactional
     public void initUser() {
@@ -129,18 +129,19 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 
         // Создайте пользователя с ролями
         User user = new User();
-        user.setUsername("Admin");
-        user.setPassword(bCryptPasswordEncoder.encode("6"));
+        user.setUsername("admin");
+        user.setPassword(bCryptPasswordEncoder.encode("admin"));
         user.setRoles(Set.of(adminRole));
         User user1 = new User();
-        user1.setUsername("User");
-        user1.setPassword(bCryptPasswordEncoder.encode("5"));
+        user1.setUsername("user");
+        user1.setPassword(bCryptPasswordEncoder.encode("user"));
         user1.setRoles(Set.of(userRole));
         Set<Role> roles = new HashSet<>();
         roles.add(adminRole);
         roles.add(userRole);
         user.setRoles(roles);
         userRepository.save(user);
+        userRepository.save(user1);
     }
 
 
