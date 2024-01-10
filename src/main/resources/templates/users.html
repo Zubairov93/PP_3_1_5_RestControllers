@@ -102,6 +102,7 @@
                                     <thead>
                                     <tr>
                                         <th scope="col">ID</th>
+                                        <th scope="col">Username</th>
                                         <th scope="col">First Name</th>
                                         <th scope="col">Last Name</th>
                                         <th scope="col">Age</th>
@@ -129,6 +130,13 @@
 
                             <form id ="creater" align="center" method="POST" action="@{/admin}" object="${user1}">
                                 <br>
+                                <div class="row justify-content-md-center">
+                                    <div class="col-md-4" align="center">
+                                        <label for="username" class="form-label text-navb">Username </label>
+                                        <input type="text" class="form-control" name="username"
+                                               id="username"/>
+                                    </div>
+                                    <p></p>
                                 <div class="row justify-content-md-center">
                                     <div class="col-md-4" align="center">
                                         <label for="firstName" class="form-label text-navb">First name </label>
@@ -173,7 +181,6 @@
                                 <p></p>
 
                                 <button type="submit" class="btn btn-success btn-lg" id="creat-button">Add new user</button>
-
                             </form>
                             <p></p>
                         </div>
@@ -209,7 +216,7 @@
                             </tr>
                             </thead>
 
-                            <tbody id="nemozhetbuit">
+                            <tbody>
 
                             </tbody>
 
