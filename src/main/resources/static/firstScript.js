@@ -1,12 +1,11 @@
-"use strict";
-console.log(1 + 1);
+
 const url = 'http://localhost:8080/admin';
 const postList = document.querySelector("tbody");
 const collapse = document.querySelector(".collapse");
 const creatUser = document.querySelector("#creater")
 const listOfRoles = document.querySelector("select")
 const konetsBlizok = document.querySelector("#nemozhetbuit");
-
+const username = document.getElementById('username');
 const firstName = document.getElementById('firstName');
 const lastName = document.getElementById('lastName');
 const age = document.getElementById('age');
@@ -21,7 +20,8 @@ const renderPosts = (data) => {
     let coll = '';
     let rolesA = '';
     console.log(data);
-    let admin = data.first.first;
+    let admin = data.admin;
+
     coll += `<div>
             <span class="nav-text text-navb probel">${admin.email}</span>
             <span class="nav-text probel">with roles:</span>`;
@@ -31,16 +31,16 @@ const renderPosts = (data) => {
     })
     coll += `</div>`;
     collapse.innerHTML = coll;
-    let user1 = data.first.second;
-    roles = data.second.second;
+    roles = data.roles;
     roles.forEach(role => {
         rolesA += `<option value="${role.id}">${role.name}
                      </option>`;
     });
     listOfRoles.innerHTML = rolesA;
-    data.second.first.forEach(post => {
+    data.users.forEach(post => {
         table += `<tr data-id="${post.id}">
             <td> ${post.id}</td>
+            <td> ${post.username}</td>
             <td> ${post.firstName}</td>
             <td> ${post.lastName}</td>
             <td> ${post.age}</td>
@@ -77,6 +77,13 @@ const renderPosts = (data) => {
                                     </div>
                                     <p></p>
                                     <div class="col-md-7">
+                                        <p class="form-label text-navb">Username</p>
+                                        <input type="text" class="form-control"
+                                               value="${post.username}"
+                                               name="username" id="usernameEdit${post.id}"/>
+                                    </div>
+                                    <p></p>
+                                    <div class="col-md-7">
                                         <p class="form-label text-navb">First
                                             name </p>
                                         <input type="text" class="form-control"
@@ -103,7 +110,7 @@ const renderPosts = (data) => {
 
                                     <div class="col-md-7">
                                         <p class="form-label text-navb">Email </p>
-                                        <input type="email" class="form-control"
+                                        <input type="text" class="form-control"
                                                value="${post.email}"
                                                name="email" id="emailEdit${post.id}"/>
                                     </div>
@@ -153,6 +160,7 @@ const renderPosts = (data) => {
     postList.innerHTML = table;
     let UserPage = `<tr>
             <td >${admin.id}</td>
+            <td >${admin.username}</td>
             <td >${admin.firstName}</td>
             <td >${admin.lastName}</td>
             <td >${admin.age}</td>
@@ -162,7 +170,7 @@ const renderPosts = (data) => {
     admin.roles.forEach(role => {
         UserPage += `<span class="nav-text probel"> ${role.name}</span>`;
     });
-    UserPage+= `</tr>`;
+    UserPage += `</tr>`;
     konetsBlizok.innerHTML = UserPage;
 }
 
@@ -188,16 +196,14 @@ postList.addEventListener('click', (e) => {
             .then(data => renderPosts(data))
 
     } else if (editButtonPressed) {
-        // let elementsFromForm = document.getElementById('formof'+userid);
-        // console.log(elementsFromForm.elements);
-        // console.log('formof'+userid);
-
+        const usernameEdit = document.getElementById(`usernameEdit${userid}`);
         const firstNameEdit = document.getElementById(`firstNameEdit${userid}`);
         const lastNameEdit = document.getElementById(`lastNameEdit${userid}`);
         const ageEdit = document.getElementById(`ageEdit${userid}`);
         const emailEdit = document.getElementById(`emailEdit${userid}`);
         const passwordEdit = document.getElementById(`passwordEdit${userid}`);
         const rolesUserEdit = document.getElementById(`rolesEdit${userid}`);
+        console.log(usernameEdit);
         console.log(firstNameEdit);
         console.log(lastNameEdit);
         console.log(ageEdit);
@@ -223,6 +229,7 @@ postList.addEventListener('click', (e) => {
 
         const d = {
             id: userid,
+            username: usernameEdit.value,
             firstName: firstNameEdit.value,
             lastName: lastNameEdit.value,
             age: ageEdit.value,
@@ -256,12 +263,7 @@ creatUser.addEventListener('submit', (e) => {
             }
         }
     }
-    //
-    // const data = new FormData(creatUser)
-    // var request = new XMLHttpRequest();
-    // request.open("POST", url);
-    // request.send(data);
-    // console.log(data);
+
     let strs = [];
     for (const option of rolesUser.selectedOptions) {
         console.log(option);
@@ -270,9 +272,9 @@ creatUser.addEventListener('submit', (e) => {
             name: getrole(option.value)
         });
     }
-    //
     console.log('Строки: ' + strs);
     const d = {
+        username: username.value,
         firstName: firstName.value,
         lastName: lastName.value,
         age: age.value,
@@ -291,6 +293,19 @@ creatUser.addEventListener('submit', (e) => {
     }).then(res => res.json())
         .then(data => renderPosts(data))
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
